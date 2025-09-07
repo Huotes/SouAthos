@@ -1,0 +1,54 @@
+@keyframes float {
+  0% {
+    transform: translateY(100vh) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-100px) rotate(720deg);
+    opacity: 0;
+  }
+}
+
+@keyframes brilho {
+  0% {
+    text-shadow: 0 0 5px #fff,
+                 0 0 10px #0ff,
+                 0 0 20px #0ff,
+                 0 0 40px #0ff;
+    color: #fff;
+  }
+  100% {
+    text-shadow: 0 0 10px #ff0,
+                 0 0 20px #ff0,
+                 0 0 40px #ff0,
+                 0 0 80px #ff0;
+    color: #ffe600;
+  }
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.2); }
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-10px); }
+  20%, 40%, 60%, 80% { transform: translateX(10px); }
+}
+
+.game-title {
+  animation: brilho 2s infinite alternate;
+}
+
+.game-over h2 {
+  animation: brilho 1.5s infinite alternate;
+}
+
+.power-up {
+  animation: pulse 2s infinite;
+}
+
+.shake {
+  animation: shake 0.5s;
+}

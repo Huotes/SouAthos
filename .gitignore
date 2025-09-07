@@ -1,0 +1,43 @@
+# === Python ===
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.pkl
+*.egg-info/
+*.egg
+*.log
+.env
+.venv/
+venv/
+ENV/
+env.bak/
+
+# === Flask ===
+instance/
+*.db
+*.sqlite3
+
+# === Docker ===
+*.pid
+*.seed
+*.bak
+docker-data/
+.docker/
+docker-compose.override.yml
+
+
+# === Frontend build ===
+dist/
+build/
+.cache/
+*.map
+
+# === Logs / Temp ===
+*.log
+*.tmp
+*.bak
+*.old
+
+# === Arquivos do jogo ===
+scores.json

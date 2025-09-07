@@ -1,0 +1,7 @@
+services:
+  sou_athos:
+    build: .
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./:/app
