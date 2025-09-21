@@ -94,11 +94,12 @@ class GameEngine:
         print("\n=== NOVAS FEATURES ===")
         print("🍎 Pontuação: +1 ponto por fruta normal")
         print("⭐ Especiais: +5 pontos (contorno dourado)")
-        print("🏃‍♀️ Fugitivas: +3 pontos (pisca e foge!)")
+        print("🏃‍♀️ Fugitivas: +3 pontos (pisca e foge → vira normal)")
+        print("🪞 Espelhos: +2 pontos (inverte perspectiva!)")
         print("🚀 Níveis: A cada 10 pontos")
         print("⚡ Velocidade: Aumenta automaticamente")
         print("🌈 Efeitos: Grid colorido no level up")
-        print("📊 Sistema de comidas especiais ativo!")
+        print("✨ Efeitos especiais de consumo implementados!")
         print("=======================")
     
     def _calculate_delta_time(self) -> None:
@@ -200,8 +201,20 @@ class GameEngine:
         # Desenha UI
         self._render_ui()
         
+        # Aplica efeitos especiais pós-renderização
+        self._apply_post_effects()
+        
         # Atualiza display
         self._renderer.present()
+    
+    def _apply_post_effects(self) -> None:
+        """Aplica efeitos visuais pós-renderização"""
+        # Efeito de espelhamento
+        if self._renderer.is_mirror_effect_active():
+            self._renderer.apply_mirror_transform(self._renderer.screen)
+        
+        # Flash da tela para comidas especiais
+        self._renderer.apply_screen_flash(self._renderer.screen)
     
     def _render_ui(self) -> None:
         """Renderiza a interface do usuário"""
@@ -283,11 +296,16 @@ class GameEngine:
         # Spawna nova comida (evita corpo da cobra)
         self._food_manager.spawn_new_food(snake_body)
         
+        # Aplica efeitos especiais baseados no tipo de comida
+        self._apply_food_consumption_effects(food_type, points)
+        
         # Log baseado no tipo de comida
         if food_type.name == 'FOOD_SPECIAL':
             print(f"⭐ Comida especial consumida! {old_score} → {self._score} pontos")
         elif food_type.name == 'FOOD_FUGITIVE':
             print(f"🏃‍♀️ Comida fugitiva capturada! {old_score} → {self._score} pontos")
+        elif food_type.name == 'FOOD_MIRROR':
+            print(f"🪞 Comida espelho consumida! {old_score} → {self._score} pontos")
         else:
             print(f"🍎 Comida normal consumida! {old_score} → {self._score} pontos")
         
@@ -295,6 +313,31 @@ class GameEngine:
         if new_level <= self._level:
             points_to_next = POINTS_PER_LEVEL - (self._score % POINTS_PER_LEVEL)
             print(f"🎯 Próximo nível em {points_to_next} pontos")
+    
+    def _apply_food_consumption_effects(self, food_type, points: int) -> None:
+        """
+        Aplica efeitos especiais baseados no tipo de comida consumida
+        
+        Args:
+            food_type: Tipo da comida consumida
+            points: Pontos obtidos
+        """
+        if food_type.name == 'FOOD_SPECIAL':
+            # Efeito dourado na tela
+            self._renderer.start_screen_flash((255, 215, 0))  # Dourado
+            print("✨ Efeito especial: Flash dourado!")
+            
+        elif food_type.name == 'FOOD_FUGITIVE':
+            # Efeito violeta na tela
+            self._renderer.start_screen_flash((138, 43, 226))  # Violeta
+            print("💨 Efeito especial: Flash violeta!")
+            
+        elif food_type.name == 'FOOD_MIRROR':
+            # Efeito de espelhamento + flash ciano
+            self._renderer.start_mirror_effect()
+            self._renderer.start_screen_flash((0, 255, 255))  # Ciano
+            print("🪞 Efeito especial: Espelhamento da tela!")
+            print("🔄 Perspectiva invertida por alguns instantes!")
     
     def _level_up(self, new_level: int) -> None:
         """

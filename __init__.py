@@ -22,7 +22,7 @@ Contém todas as entidades que podem ser desenhadas e atualizadas
 
 from .game_object import GameObject
 from .snake import Snake
-from .food import Food, SpecialFood, FugitiveFood, TrailParticle
+from .food import Food, SpecialFood, FugitiveFood, MirrorFood, TrailParticle, EffectParticle
 from .food_manager import FoodManager
 
 __all__ = [
@@ -31,7 +31,9 @@ __all__ = [
     'Food',
     'SpecialFood',
     'FugitiveFood',
+    'MirrorFood',
     'TrailParticle',
+    'EffectParticle',
     'FoodManager'
 ]
 

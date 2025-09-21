@@ -31,11 +31,13 @@ POINTS_PER_LEVEL: int = 10  # A cada 10 pontos sobe de nível
 
 # Configurações das comidas especiais
 SPECIAL_FOOD_POINTS: int = 5  # 5 pontos para comida especial
-SPECIAL_FOOD_SPAWN_CHANCE: float = 0.15  # 15% de chance de spawnar especial
-FUGITIVE_FOOD_SPAWN_CHANCE: float = 0.10  # 10% de chance de spawnar fugitiva
+SPECIAL_FOOD_SPAWN_CHANCE: float = 0.12  # 12% de chance de spawnar especial
+FUGITIVE_FOOD_SPAWN_CHANCE: float = 0.08  # 8% de chance de spawnar fugitiva
+MIRROR_FOOD_SPAWN_CHANCE: float = 0.05  # 5% de chance de spawnar espelho
 FUGITIVE_FOOD_TRAIL_DURATION: float = 1.5  # Duração do rastro em segundos
 FUGITIVE_FOOD_BLINK_SPEED: float = 3.0  # Velocidade do piscar
 FUGITIVE_FOOD_POINTS: int = 3  # 3 pontos para comida fugitiva
+MIRROR_FOOD_POINTS: int = 2  # 2 pontos para comida espelho
 
 # =============================================================================
 # CORES (RGB)
@@ -69,6 +71,8 @@ class Colors:
     SPECIAL_FOOD_BORDER: Tuple[int, int, int] = (255, 165, 0)  # Laranja dourado
     FUGITIVE_FOOD_COLOR: Tuple[int, int, int] = (138, 43, 226)  # Violeta
     FUGITIVE_FOOD_TRAIL: Tuple[int, int, int, int] = (138, 43, 226, 100)  # Violeta transparente
+    MIRROR_FOOD_COLOR: Tuple[int, int, int] = (0, 255, 255)  # Ciano/Turquesa
+    MIRROR_FOOD_BORDER: Tuple[int, int, int] = (0, 191, 255)  # Azul claro
 
 # =============================================================================
 # CONFIGURAÇÕES DE FONTES
@@ -104,6 +108,12 @@ class Effects:
     LEVEL_UP_FLASH_DURATION: float = 2.0  # Duração do flash em segundos
     LEVEL_UP_FLASH_SPEED: float = 0.1     # Velocidade da animação
     GRID_TRANSPARENCY: int = 30            # Transparência do grid (0-255)
+    
+    # Efeitos de consumo de comidas especiais
+    SPECIAL_CONSUME_EFFECT_DURATION: float = 1.0  # Duração dos efeitos especiais
+    MIRROR_EFFECT_DURATION: float = 0.5           # Duração da inversão do espelho
+    SCREEN_FLASH_INTENSITY: int = 100             # Intensidade do flash na tela
+    PARTICLE_BURST_COUNT: int = 8                 # Número de partículas no burst
 # =============================================================================
 # CONFIGURAÇÕES DE POSIÇÕES INICIAIS
 # =============================================================================

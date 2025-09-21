@@ -40,6 +40,12 @@ class Renderer:
         # Efeito de level up
         self._level_up_timer = 0.0
         self._level_up_active = False
+        
+        # Efeito espelho
+        self._mirror_effect_timer = 0.0
+        self._mirror_effect_active = False
+        self._screen_flash_timer = 0.0
+        self._screen_flash_active = False
     
     @property
     def screen(self) -> Surface:
@@ -196,7 +202,18 @@ class Renderer:
                 self._level_up_timer = 0.0
                 print("✨ Efeito de level up finalizado")
     
-    def is_level_up_active(self) -> bool:
+    def start_mirror_effect(self) -> None:
+        """Inicia o efeito visual de espelho"""
+        self._mirror_effect_active = True
+        self._mirror_effect_timer = 0.0
+        print("🪞 Efeito de espelhamento ativado!")
+    
+    def start_screen_flash(self, color: tuple = (255, 255, 255)) -> None:
+        """Inicia efeito de flash na tela"""
+        self._screen_flash_active = True
+        self._screen_flash_timer = 0.0
+        self._flash_color = color
+        print(f"⚡ Flash da tela ativado com cor {color}!")
         """
         Verifica se o efeito de level up está ativo
         
@@ -204,3 +221,54 @@ class Renderer:
             True se efeito ativo, False caso contrário
         """
         return self._level_up_active
+    
+    def is_mirror_effect_active(self) -> bool:
+        """
+        Verifica se o efeito de espelho está ativo
+        
+        Returns:
+            True se efeito ativo
+        """
+        return self._mirror_effect_active
+    
+    def apply_mirror_transform(self, surface: Surface) -> None:
+        """
+        Aplica transformação de espelhamento na superfície
+        
+        Args:
+            surface: Superfície a ser espelhada
+        """
+        if self._mirror_effect_active:
+            # Cria uma superfície espelhada horizontalmente
+            flipped_surface = pygame.transform.flip(surface, True, False)
+            
+            # Calcula intensidade do efeito baseado no tempo
+            effect_progress = self._mirror_effect_timer / Effects.MIRROR_EFFECT_DURATION
+            alpha = int(255 * (1.0 - effect_progress))  # Desvanece gradualmente
+            
+            # Aplica transparência
+            flipped_surface.set_alpha(alpha)
+            
+            # Desenha sobre a superfície original
+            surface.blit(flipped_surface, (0, 0))
+    
+    def apply_screen_flash(self, surface: Surface) -> None:
+        """
+        Aplica efeito de flash na tela
+        
+        Args:
+            surface: Superfície onde aplicar o flash
+        """
+        if self._screen_flash_active:
+            # Calcula intensidade baseado no tempo
+            progress = self._screen_flash_timer / Effects.SPECIAL_CONSUME_EFFECT_DURATION
+            intensity = int(Effects.SCREEN_FLASH_INTENSITY * (1.0 - progress))
+            
+            if intensity > 0:
+                # Cria overlay de flash
+                flash_surface = pygame.Surface((WINDOW_WIDTH, WINDOW_HEIGHT))
+                flash_surface.set_alpha(intensity)
+                flash_surface.fill(getattr(self, '_flash_color', (255, 255, 255)))
+                
+                # Aplica na tela
+                surface.blit(flash_surface, (0, 0))

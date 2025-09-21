@@ -153,7 +153,7 @@ def print_welcome_banner() -> None:
 ║           🐍 SNAKE GAME 🐍               ║
 ║                                          ║
 ║        Arquitetura Modular POO           ║
-║       Python 3.13 + Pygame             ║
+║          Python 3.13 + Pygame            ║
 ╚══════════════════════════════════════════╝
 """
     print(banner)

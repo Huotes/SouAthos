@@ -44,4 +44,6 @@ class EntityType(Enum):
     FOOD_NORMAL = "food_normal"
     FOOD_SPECIAL = "food_special"
     FOOD_FUGITIVE = "food_fugitive"
+    FOOD_MIRROR = "food_mirror"
     TRAIL_PARTICLE = "trail_particle"
+    EFFECT_PARTICLE = "effect_particle"

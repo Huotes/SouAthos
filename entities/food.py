@@ -13,7 +13,7 @@ from entities.game_object import GameObject
 from utils.enums import EntityType
 from config.settings import (
     GRID_SIZE, GRID_WIDTH, GRID_HEIGHT, Colors,
-    SPECIAL_FOOD_POINTS, FUGITIVE_FOOD_POINTS, POINTS_PER_FOOD,
+    SPECIAL_FOOD_POINTS, FUGITIVE_FOOD_POINTS, POINTS_PER_FOOD, MIRROR_FOOD_POINTS,
     FUGITIVE_FOOD_BLINK_SPEED, FUGITIVE_FOOD_TRAIL_DURATION
 )
 
@@ -371,6 +371,17 @@ class FugitiveFood(Food):
         
         return False
     
+    def transform_to_normal(self) -> 'Food':
+        """
+        Transforma esta comida fugitiva em uma comida normal
+        
+        Returns:
+            Nova instância de Food normal na mesma posição
+        """
+        normal_food = Food(EntityType.FOOD_NORMAL)
+        normal_food._position = self.position
+        print("🏃‍♀️ → 🍎 Comida fugitiva virou normal após fuga!")
+    
     def draw(self, surface: Surface) -> None:
         """Desenha comida fugitiva com efeito piscante"""
         if not self.active:
@@ -431,3 +442,161 @@ class FugitiveFood(Food):
         
         # Borda principal
         pygame.draw.circle(surface, Colors.BLACK, (center_x, center_y), radius, 1)
+
+class MirrorFood(Food):
+    """
+    Comida espelho que inverte a perspectiva do jogo
+    """
+    
+    def __init__(self):
+        """Inicializa comida espelho"""
+        super().__init__(EntityType.FOOD_MIRROR)
+        self._points_value = MIRROR_FOOD_POINTS
+        self._mirror_animation = 0.0
+        self._reflection_offset = 0.0
+    
+    def update_animation(self, delta_time: float = 1.0) -> None:
+        """Atualiza animação da comida espelho"""
+        super().update_animation(delta_time)
+        self._mirror_animation += delta_time * 4.0  # Animação espelhada
+        self._reflection_offset += delta_time * 6.0  # Efeito de reflexão
+    
+    def draw(self, surface: Surface) -> None:
+        """Desenha comida espelho com efeito de reflexão"""
+        if not self.active:
+            return
+        
+        x, y = self.position
+        center_x = x * GRID_SIZE + GRID_SIZE // 2
+        center_y = y * GRID_SIZE + GRID_SIZE // 2
+        
+        # Efeito pulsante com espelhamento
+        pulse_factor = 1.0 + 0.1 * math.sin(self._animation_counter)
+        radius = int((GRID_SIZE // 2 - 1) * pulse_factor)
+        
+        # Efeito de "espelhamento" - desenha duas metades
+        left_color = Colors.MIRROR_FOOD_COLOR
+        right_color = tuple(min(255, int(c * 1.3)) for c in Colors.MIRROR_FOOD_COLOR)
+        
+        # Desenha metade esquerda
+        left_rect = pygame.Rect(center_x - radius, center_y - radius, radius, radius * 2)
+        pygame.draw.ellipse(surface, left_color, left_rect)
+        
+        # Desenha metade direita
+        right_rect = pygame.Rect(center_x, center_y - radius, radius, radius * 2)
+        pygame.draw.ellipse(surface, right_color, right_rect)
+        
+        # Linha divisória no meio (efeito espelho)
+        pygame.draw.line(surface, Colors.WHITE, 
+                        (center_x, center_y - radius), 
+                        (center_x, center_y + radius), 2)
+        
+        # Efeito de reflexão animado
+        reflection_intensity = 0.5 + 0.5 * abs(math.sin(self._reflection_offset))
+        if reflection_intensity > 0.7:
+            # Cria brilho na linha do espelho
+            for i in range(3):
+                alpha = int(100 * reflection_intensity * (1.0 - i * 0.3))
+                reflection_surface = pygame.Surface((4, radius * 2))
+                reflection_surface.set_alpha(alpha)
+                reflection_surface.fill(Colors.WHITE)
+                
+                surface.blit(reflection_surface, 
+                           (center_x - 2, center_y - radius))
+        
+        # Símbolos de setas espelhadas (indicador de inversão)
+        if radius >= 8:
+            arrow_size = radius // 3
+            
+            # Seta esquerda
+            left_arrow = [
+                (center_x - arrow_size, center_y),
+                (center_x - arrow_size//2, center_y - arrow_size//2),
+                (center_x - arrow_size//2, center_y + arrow_size//2)
+            ]
+            pygame.draw.polygon(surface, Colors.WHITE, left_arrow)
+            
+            # Seta direita (espelhada)
+            right_arrow = [
+                (center_x + arrow_size, center_y),
+                (center_x + arrow_size//2, center_y - arrow_size//2),
+                (center_x + arrow_size//2, center_y + arrow_size//2)
+            ]
+            pygame.draw.polygon(surface, Colors.WHITE, right_arrow)
+        
+        # Borda com gradiente
+        pygame.draw.circle(surface, Colors.MIRROR_FOOD_BORDER, (center_x, center_y), radius, 2)
+        pygame.draw.circle(surface, Colors.BLACK, (center_x, center_y), radius, 1)
+
+class EffectParticle:
+    """
+    Partícula de efeito para consumo de comidas especiais
+    """
+    
+    def __init__(self, position: Position, color: tuple, direction: tuple, speed: float = 50.0):
+        """
+        Inicializa partícula de efeito
+        
+        Args:
+            position: Posição inicial
+            color: Cor da partícula
+            direction: Direção (x, y) normalizada
+            speed: Velocidade em pixels/segundo
+        """
+        self.position = list(position)  # Posição em pixels reais
+        self.color = color
+        self.direction = direction
+        self.speed = speed
+        self.life_time = 0.8  # 0.8 segundos de vida
+        self.remaining_time = self.life_time
+        self.active = True
+        self.size = random.randint(2, 5)
+    
+    def update(self, delta_time: float) -> None:
+        """
+        Atualiza a partícula
+        
+        Args:
+            delta_time: Tempo decorrido
+        """
+        if not self.active:
+            return
+        
+        # Move a partícula
+        self.position[0] += self.direction[0] * self.speed * delta_time
+        self.position[1] += self.direction[1] * self.speed * delta_time
+        
+        # Reduz tempo de vida
+        self.remaining_time -= delta_time
+        if self.remaining_time <= 0:
+            self.active = False
+        
+        # Reduz tamanho com o tempo
+        life_factor = self.remaining_time / self.life_time
+        self.size = max(1, int(5 * life_factor))
+    
+    def draw(self, surface: Surface) -> None:
+        """
+        Desenha a partícula de efeito
+        
+        Args:
+            surface: Superfície onde desenhar
+        """
+        if not self.active:
+            return
+        
+        # Calcula alpha baseado no tempo restante
+        life_factor = self.remaining_time / self.life_time
+        alpha = int(255 * life_factor)
+        
+        # Cria superfície com alpha
+        particle_surface = pygame.Surface((self.size * 2, self.size * 2))
+        particle_surface.set_alpha(alpha)
+        particle_surface.set_colorkey(Colors.BLACK)
+        
+        # Desenha partícula
+        pygame.draw.circle(particle_surface, self.color, 
+                         (self.size, self.size), self.size)
+        
+        surface.blit(particle_surface, 
+                    (int(self.position[0] - self.size), int(self.position[1] - self.size)))
