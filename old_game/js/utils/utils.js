@@ -155,3 +155,42 @@ export function oscillatingColor(colorA, colorB, speed = 0.012) {
   return mixHex(colorA, colorB, t);
 }
 
+// ===============================
+// Flash colorido nas bordas do canvas
+// ===============================
+export function flashCanvasBorder() {
+  const canvas = document.getElementById("game-canvas");
+  if (!canvas) return;
+
+  canvas.classList.add("flash-border");
+  setTimeout(() => canvas.classList.remove("flash-border"), 600);
+}
+
+
+// Mostra contagem regressiva nas bolinhas e só depois chama o callback
+export function playResizeIndicator(callback) {
+  const dots = document.querySelectorAll("#resize-indicator .resize-dot");
+  if (!dots.length) {
+    callback(); // fallback, se não tiver bolinhas
+    return;
+  }
+
+  // Reseta as bolinhas
+  dots.forEach(dot => dot.classList.remove("active"));
+
+  let step = 0;
+
+  const interval = setInterval(() => {
+    if (step > 0) dots[step - 1].classList.remove("active"); // desativa anterior
+    if (step < dots.length) {
+      dots[step].classList.add("active"); // ativa atual
+    } else {
+      clearInterval(interval);
+      // tira a seleção no final
+      dots.forEach(dot => dot.classList.remove("active"));
+      callback(); // chama o redimensionamento real
+    }
+    step++;
+  }, 500); // meio segundo entre cada bolinha
+}
+

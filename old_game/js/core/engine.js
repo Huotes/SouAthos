@@ -5,6 +5,8 @@ import { updateScore, updateLevel } from "../ui/hud.js";
 import { draw, animateFoodSwap, canvas, gridSize } from "../render/render.js";
 import { randomInt, isPositionOccupied, shakeScreen, changeColorTheme, showAchievement } from "../utils/utils.js";
 import { getPlayerName, postScoreIfHigh } from "../main.js";
+import { flashCanvasBorder } from "../utils/utils.js";
+import { playResizeIndicator } from "../utils/utils.js";
 import { createParticles } from "../utils/utils.js";
 
 // ==============================
@@ -39,25 +41,25 @@ export function eatFood() {
 
   const newLevel = Math.floor(gameState.score / 5) + 1;
   if (newLevel > gameState.level) {
-    gameState.level = newLevel;
-    updateLevel();
+  gameState.level = newLevel;
+  updateLevel();
 
-    gameState.gameSpeed = Math.max(50, 130 - (gameState.level - 1) * 15);
-    clearInterval(gameState.gameLoop);
-    gameState.gameLoop = setInterval(gameUpdate, gameState.gameSpeed);
+  gameState.gameSpeed = Math.max(50, 130 - (gameState.level - 1) * 15);
+  clearInterval(gameState.gameLoop);
+  gameState.gameLoop = setInterval(gameUpdate, gameState.gameSpeed);
 
-    gameState.colorTheme = changeColorTheme();
-    showAchievement(`Nível ${gameState.level} alcançado!`);
+  gameState.colorTheme = changeColorTheme();
+  showAchievement(`Nível ${gameState.level} alcançado!`);
 
-    // --- Flash suave e partículas coloridas ---
-    const body = document.body;
-    const themeColor = getComputedStyle(body).getPropertyValue("--snake-color") || "#0ff";
-    body.style.transition = "background 0.25s";
-    body.style.background = `${themeColor}22`; // transparente + cor do nível
-    setTimeout(() => { body.style.background = ""; }, 150);
+  // --- Só borda e partículas ---
+  flashCanvasBorder();
+  const themeColor = getComputedStyle(document.body).getPropertyValue("--snake-color") || "#0ff";
+  createParticles(30, themeColor);
+  }
 
-    // Criar partículas coloridas no flash
-    createParticles(30, themeColor);
+  // dentro de eatFood(), logo após updateScore():
+  if (gameState.score % 10 === 0) {
+    flashCanvasBorder();
   }
 
   generateFood(); // comida reaparece
@@ -151,4 +153,25 @@ export function gameUpdate() {
 
   draw(gameState.snake, gameState.food);
 }
+
+function resizeGameCanvas() {
+  const canvas = document.getElementById("game-canvas");
+  if (!canvas) return;
+
+  const parent = canvas.parentElement;
+  const size = Math.min(parent.clientWidth, parent.clientHeight);
+
+  canvas.width = size;
+  canvas.height = size;
+}
+
+// Novo handler de resize com indicador
+function handleResize() {
+  playResizeIndicator(() => {
+    resizeGameCanvas();
+  });
+}
+
+window.addEventListener("resize", handleResize);
+window.addEventListener("load", resizeGameCanvas);
 
