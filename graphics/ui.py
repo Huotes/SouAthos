@@ -1,127 +1,189 @@
 """
-Sistema de interface do usuário
-Princípio de responsabilidade única: Apenas UI
+Sistema de interface moderna com tema Gruvbox
+Inclui elementos animados, bordas arredondadas e gradientes
 """
 
 import pygame
-from typing import Optional, Tuple
+import math
+from typing import Optional, Tuple, List
 from utils.types import Surface, Color, Font
 from config.settings import (
     WINDOW_WIDTH, WINDOW_HEIGHT, Colors, 
-    FontSizes, Messages
+    FontSizes, Messages, Effects
 )
 
 class UIManager:
     """
-    Gerenciador da interface do usuário
+    Gerenciador de interface moderna com tema Gruvbox
     
-    Responsabilidades:
-    - Renderização de texto
-    - Posicionamento de elementos
-    - Gerenciamento de fontes
+    Recursos:
+    - Painéis com bordas arredondadas
+    - Gradientes suaves
+    - Animações fluidas
+    - Sombras realistas
+    - Tema Gruvbox consistente
     """
     
     def __init__(self):
-        """Inicializa o gerenciador de UI"""
+        """Inicializa o gerenciador de UI moderna"""
         pygame.font.init()
+        
+        # Carrega fontes com melhor qualidade
         self._fonts = {
             'small': pygame.font.Font(None, FontSizes.SMALL),
             'medium': pygame.font.Font(None, FontSizes.MEDIUM),
             'large': pygame.font.Font(None, FontSizes.LARGE),
             'extra_large': pygame.font.Font(None, FontSizes.EXTRA_LARGE)
         }
+        
+        # Timer para animações da UI
+        self._animation_timer = 0.0
+        
+        # Cache de superfícies renderizadas
+        self._text_cache = {}
+        
+        print("🎨 ModernUIManager inicializado com tema Gruvbox!")
+    
+    def update_animations(self, delta_time: float) -> None:
+        """Atualiza animações da UI"""
+        self._animation_timer += delta_time
     
     def get_font(self, size: str) -> Font:
-        """
-        Retorna uma fonte pelo tamanho
-        
-        Args:
-            size: Tamanho da fonte ('small', 'medium', 'large', 'extra_large')
-            
-        Returns:
-            Objeto Font
-        """
+        """Retorna fonte pelo tamanho"""
         return self._fonts.get(size, self._fonts['medium'])
     
-    def render_text(self, text: str, font_size: str = 'medium', 
-                   color: Color = Colors.WHITE, 
-                   antialias: bool = True) -> Surface:
+    def _create_rounded_surface(self, size: Tuple[int, int], color: Color, 
+                               radius: int = Effects.UI_CORNER_RADIUS,
+                               border_color: Optional[Color] = None,
+                               border_width: int = 0) -> Surface:
         """
-        Renderiza texto em uma superfície
+        Cria superfície com bordas arredondadas
         
         Args:
-            text: Texto a ser renderizado
-            font_size: Tamanho da fonte
-            color: Cor do texto
-            antialias: Usar antialiasing
-            
-        Returns:
-            Superfície com o texto renderizado
+            size: Tamanho da superfície
+            color: Cor de preenchimento
+            radius: Raio das bordas
+            border_color: Cor da borda
+            border_width: Espessura da borda
         """
-        font = self.get_font(font_size)
-        return font.render(text, antialias, color)
+        surface = pygame.Surface(size, pygame.SRCALPHA)
+        surface.fill((0, 0, 0, 0))  # Transparente
+        
+        # Retângulo com bordas arredondadas
+        pygame.draw.rect(surface, color, (0, 0, *size), border_radius=radius)
+        
+        if border_color and border_width > 0:
+            pygame.draw.rect(surface, border_color, (0, 0, *size), 
+                           border_width, border_radius=radius)
+        
+        return surface
     
-    def draw_text_centered(self, surface: Surface, text: str, 
-                          position: Tuple[int, int], font_size: str = 'medium',
-                          color: Color = Colors.WHITE) -> pygame.Rect:
+    def _draw_shadow(self, surface: Surface, rect: pygame.Rect, 
+                    intensity: int = Effects.UI_SHADOW_INTENSITY) -> None:
+        """Desenha sombra suave para elementos da UI"""
+        shadow_rect = rect.move(3, 3)
+        shadow_surface = pygame.Surface((shadow_rect.width, shadow_rect.height), pygame.SRCALPHA)
+        shadow_surface.fill((*Colors.SHADOW_COLOR, intensity))
+        
+        # Blur simples com múltiplas camadas
+        for i in range(3):
+            blur_rect = shadow_rect.move(-i, -i)
+            blur_alpha = intensity // (i + 2)
+            blur_surface = pygame.Surface((blur_rect.width + i*2, blur_rect.height + i*2), pygame.SRCALPHA)
+            blur_surface.fill((*Colors.SHADOW_COLOR, blur_alpha))
+            surface.blit(blur_surface, (blur_rect.x - i, blur_rect.y - i))
+    
+    def draw_panel(self, surface: Surface, rect: pygame.Rect, 
+                  background_color: Color = Colors.UI_BACKGROUND,
+                  border_color: Color = Colors.FG_DARK,
+                  animated: bool = True) -> None:
         """
-        Desenha texto centralizado em uma posição
+        Desenha painel moderno com sombra e bordas arredondadas
         
         Args:
             surface: Superfície onde desenhar
-            text: Texto a desenhar
-            position: Posição central (x, y)
-            font_size: Tamanho da fonte
-            color: Cor do texto
-            
-        Returns:
-            Retângulo ocupado pelo texto
+            rect: Retângulo do painel
+            background_color: Cor de fundo
+            border_color: Cor da borda
+            animated: Se deve aplicar animações
         """
-        text_surface = self.render_text(text, font_size, color)
+        # Desenha sombra
+        self._draw_shadow(surface, rect)
+        
+        # Animação sutil de respiração
+        if animated:
+            breath_factor = 1.0 + 0.02 * math.sin(self._animation_timer * 2)
+            animated_rect = pygame.Rect(
+                rect.x - int((rect.width * (breath_factor - 1)) / 2),
+                rect.y - int((rect.height * (breath_factor - 1)) / 2),
+                int(rect.width * breath_factor),
+                int(rect.height * breath_factor)
+            )
+        else:
+            animated_rect = rect
+        
+        # Cria painel com bordas arredondadas
+        panel_surface = self._create_rounded_surface(
+            (animated_rect.width, animated_rect.height),
+            background_color,
+            Effects.UI_CORNER_RADIUS,
+            border_color,
+            2
+        )
+        
+        surface.blit(panel_surface, animated_rect.topleft)
+    
+    def draw_text_with_glow(self, surface: Surface, text: str, 
+                           position: Tuple[int, int], font_size: str = 'medium',
+                           text_color: Color = Colors.UI_PRIMARY,
+                           glow_color: Optional[Color] = None,
+                           glow_intensity: float = 0.5) -> pygame.Rect:
+        """
+        Desenha texto com efeito de brilho
+        
+        Args:
+            surface: Superfície onde desenhar
+            text: Texto a renderizar
+            position: Posição central do texto
+            font_size: Tamanho da fonte
+            text_color: Cor do texto
+            glow_color: Cor do brilho (usa text_color se None)
+            glow_intensity: Intensidade do brilho
+        """
+        if glow_color is None:
+            glow_color = text_color
+        
+        font = self.get_font(font_size)
+        
+        # Renderiza texto principal
+        text_surface = font.render(text, True, text_color)
         text_rect = text_surface.get_rect(center=position)
+        
+        # Efeito de brilho (múltiplas camadas)
+        if glow_intensity > 0:
+            for i in range(1, 4):
+                glow_alpha = int(100 * glow_intensity / i)
+                if glow_alpha > 0:
+                    glow_surface = font.render(text, True, glow_color)
+                    glow_surface.set_alpha(glow_alpha)
+                    
+                    # Desenha brilho em posições ligeiramente deslocadas
+                    for dx in [-i, 0, i]:
+                        for dy in [-i, 0, i]:
+                            if dx != 0 or dy != 0:
+                                glow_rect = text_rect.move(dx, dy)
+                                surface.blit(glow_surface, glow_rect)
+        
+        # Desenha texto principal por cima
         surface.blit(text_surface, text_rect)
+        
         return text_rect
     
-    def draw_text_at(self, surface: Surface, text: str, 
-                    position: Tuple[int, int], font_size: str = 'medium',
-                    color: Color = Colors.WHITE) -> pygame.Rect:
+    def draw_animated_hud(self, surface: Surface, score: int, length: int, 
+                         level: int = 1, speed_multiplier: float = 1.0, 
+                         food_stats: dict = None) -> None:
         """
-        Desenha texto em uma posição específica (canto superior esquerdo)
-        
-        Args:
-            surface: Superfície onde desenhar
-            text: Texto a desenhar
-            position: Posição (x, y)
-            font_size: Tamanho da fonte
-            color: Cor do texto
-            
-        Returns:
-            Retângulo ocupado pelo texto
-        """
-        text_surface = self.render_text(text, font_size, color)
-        text_rect = text_surface.get_rect(topleft=position)
-        surface.blit(text_surface, text_rect)
-        return text_rect
-    
-    def get_text_size(self, text: str, font_size: str = 'medium') -> Tuple[int, int]:
-        """
-        Retorna o tamanho de um texto
-        
-        Args:
-            text: Texto a medir
-            font_size: Tamanho da fonte
-            
-        Returns:
-            Tupla (largura, altura)
-        """
-        font = self.get_font(font_size)
-        return font.size(text)
-    
-    def draw_hud(self, surface: Surface, score: int, length: int, 
-                level: int = 1, speed_multiplier: float = 1.0, 
-                food_stats: dict = None) -> None:
-        """
-        Desenha o HUD (heads-up display) do jogo
+        Desenha HUD moderno e animado
         
         Args:
             surface: Superfície onde desenhar
@@ -129,194 +191,242 @@ class UIManager:
             length: Tamanho da cobra
             level: Nível atual
             speed_multiplier: Multiplicador de velocidade
-            food_stats: Estatísticas de comidas (opcional)
+            food_stats: Estatísticas de comidas
         """
-        # Score
-        score_text = Messages.CURRENT_SCORE.format(score=score)
-        self.draw_text_at(surface, score_text, (10, 10), 'medium', Colors.WHITE)
+        # Painel principal do HUD (canto superior esquerdo)
+        hud_width = 220
+        hud_height = 140
+        hud_rect = pygame.Rect(Effects.UI_PADDING, Effects.UI_PADDING, 
+                              hud_width, hud_height)
+        
+        self.draw_panel(surface, hud_rect, Colors.UI_BACKGROUND, Colors.FG_DARK)
+        
+        # Conteúdo do painel
+        y_offset = hud_rect.y + Effects.UI_PADDING + 5
+        line_height = 25
+        
+        # Score com animação
+        score_pulse = 1.0 + 0.1 * math.sin(self._animation_timer * 4)
+        score_color = tuple(int(c * score_pulse) for c in Colors.UI_ACCENT)
+        self.draw_text_with_glow(
+            surface, f"Score: {score:,}", 
+            (hud_rect.x + hud_width // 2, y_offset), 
+            'medium', score_color, glow_intensity=0.3
+        )
+        y_offset += line_height
         
         # Tamanho da cobra
-        length_text = Messages.SNAKE_LENGTH.format(length=length)
-        self.draw_text_at(surface, length_text, (10, 50), 'medium', Colors.WHITE)
+        self.draw_text_with_glow(
+            surface, f"Length: {length}", 
+            (hud_rect.x + hud_width // 2, y_offset), 
+            'small', Colors.UI_PRIMARY
+        )
+        y_offset += line_height
         
-        # Nível (com destaque)
-        level_text = Messages.CURRENT_LEVEL.format(level=level)
-        level_color = Colors.WHITE if level == 1 else (255, 215, 0)  # Dourado para níveis > 1
-        self.draw_text_at(surface, level_text, (10, 90), 'medium', level_color)
+        # Nível com destaque especial
+        level_color = Colors.BRIGHT_YELLOW if level > 1 else Colors.UI_PRIMARY
+        level_glow = 0.6 if level > 1 else 0.2
+        self.draw_text_with_glow(
+            surface, f"Level: {level}", 
+            (hud_rect.x + hud_width // 2, y_offset), 
+            'medium', level_color, glow_intensity=level_glow
+        )
+        y_offset += line_height
         
-        # Velocidade (lado direito)
-        speed_text = Messages.SPEED_INFO.format(speed=speed_multiplier)
-        speed_color = (255, 100, 100) if speed_multiplier > 2 else Colors.LIGHT_GRAY
-        text_width, _ = self.get_text_size(speed_text, 'small')
-        self.draw_text_at(surface, speed_text, 
-                         (WINDOW_WIDTH - text_width - 10, 10), 
-                         'small', speed_color)
+        # Velocidade com indicador visual
+        speed_color = Colors.BRIGHT_RED if speed_multiplier > 2 else Colors.UI_SECONDARY
+        self.draw_text_with_glow(
+            surface, f"Speed: {speed_multiplier:.1f}x", 
+            (hud_rect.x + hud_width // 2, y_offset), 
+            'small', speed_color
+        )
         
-        # Legenda das comidas especiais (canto superior direito)
-        if food_stats:
-            legend_x = WINDOW_WIDTH - 200
-            legend_y = 50
+        # Painel de estatísticas de comidas (canto superior direito)
+        if food_stats and any(food_stats.get(key, 0) > 0 for key in 
+                             ['special_consumed', 'fugitive_consumed', 'mirror_consumed']):
+            stats_width = 200
+            stats_height = 100
+            stats_rect = pygame.Rect(WINDOW_WIDTH - stats_width - Effects.UI_PADDING, 
+                                   Effects.UI_PADDING, stats_width, stats_height)
             
-            # Comida especial
-            if food_stats.get('special_consumed', 0) > 0:
-                special_text = f"⭐ Especiais: {food_stats['special_consumed']}"
-                self.draw_text_at(surface, special_text, 
-                                (legend_x, legend_y), 'small', Colors.SPECIAL_FOOD_COLOR)
-                legend_y += 20
+            self.draw_panel(surface, stats_rect, Colors.UI_BACKGROUND, Colors.FG_DARK)
             
-            # Comida fugitiva
-            if food_stats.get('fugitive_consumed', 0) > 0:
-                fugitive_text = f"🏃‍♀️ Fugitivas: {food_stats['fugitive_consumed']}"
-                self.draw_text_at(surface, fugitive_text, 
-                                (legend_x, legend_y), 'small', Colors.FUGITIVE_FOOD_COLOR)
-                legend_y += 20
+            stats_y = stats_rect.y + Effects.UI_PADDING
+            stats_line_height = 20
             
-            # Fugas
-            if food_stats.get('fugitive_escapes', 0) > 0:
-                escapes_text = f"💨 Fugas: {food_stats['fugitive_escapes']}"
-                self.draw_text_at(surface, escapes_text, 
-                                (legend_x, legend_y), 'small', Colors.GRAY)
-    
-    def draw_game_over_screen(self, surface: Surface, final_score: int) -> None:
-        """
-        Desenha a tela de game over
-        
-        Args:
-            surface: Superfície onde desenhar
-            final_score: Pontuação final
-        """
-        center_x = WINDOW_WIDTH // 2
-        center_y = WINDOW_HEIGHT // 2
-        
-        # Fundo semi-transparente
-        overlay = pygame.Surface((WINDOW_WIDTH, WINDOW_HEIGHT))
-        overlay.set_alpha(128)
-        overlay.fill(Colors.BLACK)
-        surface.blit(overlay, (0, 0))
-        
-        # Game Over
-        self.draw_text_centered(
-            surface, Messages.GAME_OVER, 
-            (center_x, center_y - 80), 
-            'extra_large', Colors.RED
-        )
-        
-        # Score final
-        final_score_text = Messages.FINAL_SCORE.format(score=final_score)
-        self.draw_text_centered(
-            surface, final_score_text, 
-            (center_x, center_y - 20), 
-            'large', Colors.WHITE
-        )
-        
-        # Instruções
-        self.draw_text_centered(
-            surface, Messages.RESTART_INSTRUCTION, 
-            (center_x, center_y + 40), 
-            'medium', Colors.LIGHT_GRAY
-        )
-    
-    def draw_pause_screen(self, surface: Surface) -> None:
-        """
-        Desenha a tela de pausa
-        
-        Args:
-            surface: Superfície onde desenhar
-        """
-        center_x = WINDOW_WIDTH // 2
-        center_y = WINDOW_HEIGHT // 2
-        
-        # Fundo semi-transparente
-        overlay = pygame.Surface((WINDOW_WIDTH, WINDOW_HEIGHT))
-        overlay.set_alpha(100)
-        overlay.fill(Colors.BLACK)
-        surface.blit(overlay, (0, 0))
-        
-        # Texto de pausa
-        self.draw_text_centered(
-            surface, Messages.PAUSED,
-            (center_x, center_y),
-            'large', Colors.WHITE
-        )
-    
-    def draw_menu(self, surface: Surface, title: str, options: list, 
-                 selected_index: int = 0) -> None:
-        """
-        Desenha um menu simples
-        
-        Args:
-            surface: Superfície onde desenhar
-            title: Título do menu
-            options: Lista de opções
-            selected_index: Índice da opção selecionada
-        """
-        center_x = WINDOW_WIDTH // 2
-        start_y = WINDOW_HEIGHT // 2 - 100
-        
-        # Título
-        self.draw_text_centered(
-            surface, title,
-            (center_x, start_y),
-            'large', Colors.WHITE
-        )
-        
-        # Opções
-        for i, option in enumerate(options):
-            y_pos = start_y + 80 + (i * 50)
-            color = Colors.WHITE if i == selected_index else Colors.GRAY
-            
-            self.draw_text_centered(
-                surface, option,
-                (center_x, y_pos),
-                'medium', color
+            # Título
+            self.draw_text_with_glow(
+                surface, "Special Foods", 
+                (stats_rect.centerx, stats_y + 10), 
+                'small', Colors.UI_ACCENT, glow_intensity=0.2
             )
+            stats_y += 25
             
-            # Indicador de seleção
-            if i == selected_index:
-                self.draw_text_centered(
-                    surface, "> ",
-                    (center_x - 100, y_pos),
-                    'medium', Colors.WHITE
+            # Estatísticas com ícones coloridos
+            if food_stats.get('special_consumed', 0) > 0:
+                self.draw_text_with_glow(
+                    surface, f"⭐ Gold: {food_stats['special_consumed']}", 
+                    (stats_rect.centerx, stats_y), 
+                    'small', Colors.FOOD_SPECIAL
+                )
+                stats_y += stats_line_height
+            
+            if food_stats.get('fugitive_consumed', 0) > 0:
+                self.draw_text_with_glow(
+                    surface, f"🏃‍♀️ Runner: {food_stats['fugitive_consumed']}", 
+                    (stats_rect.centerx, stats_y), 
+                    'small', Colors.FOOD_FUGITIVE
+                )
+                stats_y += stats_line_height
+            
+            if food_stats.get('mirror_consumed', 0) > 0:
+                self.draw_text_with_glow(
+                    surface, f"🪞 Mirror: {food_stats['mirror_consumed']}", 
+                    (stats_rect.centerx, stats_y), 
+                    'small', Colors.FOOD_MIRROR
                 )
     
-    def cleanup(self) -> None:
-        """Limpa recursos da UI"""
-        pygame.font.quit()
-    
     def draw_level_up_notification(self, surface: Surface, level: int) -> None:
-        """
-        Desenha notificação de level up
-        
-        Args:
-            surface: Superfície onde desenhar
-            level: Novo nível alcançado
-        """
+        """Desenha notificação animada de level up"""
         center_x = WINDOW_WIDTH // 2
-        center_y = WINDOW_HEIGHT // 2 - 150
+        center_y = WINDOW_HEIGHT // 2 - 100
         
-        # Fundo semi-transparente colorido
-        overlay = pygame.Surface((400, 100))
-        overlay.set_alpha(180)
+        # Painel animado com pulso
+        pulse_factor = 1.0 + 0.3 * math.sin(self._animation_timer * 6)
+        panel_width = int(400 * pulse_factor)
+        panel_height = int(120 * pulse_factor)
         
-        # Cor de fundo baseada no nível (ciclo de cores)
+        panel_rect = pygame.Rect(center_x - panel_width // 2, center_y - panel_height // 2,
+                               panel_width, panel_height)
+        
+        # Cor baseada no nível
         bg_color_index = (level - 1) % len(Colors.RAINBOW_COLORS)
         bg_color = Colors.RAINBOW_COLORS[bg_color_index]
-        overlay.fill(bg_color)
         
-        overlay_rect = overlay.get_rect(center=(center_x, center_y))
-        surface.blit(overlay, overlay_rect)
+        # Painel com transparência
+        panel_surface = self._create_rounded_surface(
+            (panel_width, panel_height),
+            (*bg_color, 200),
+            Effects.UI_CORNER_RADIUS * 2
+        )
         
-        # Texto "LEVEL UP!"
-        self.draw_text_centered(
+        # Sombra dramática
+        self._draw_shadow(surface, panel_rect, 200)
+        
+        surface.blit(panel_surface, panel_rect.topleft)
+        
+        # Texto "LEVEL UP!" com efeito dramático
+        self.draw_text_with_glow(
             surface, Messages.LEVEL_UP,
             (center_x, center_y - 20),
-            'large', Colors.WHITE
+            'extra_large', Colors.FG_LIGHT, 
+            glow_intensity=0.8
         )
         
         # Número do nível
-        level_text = f"Nível {level}"
-        self.draw_text_centered(
+        level_text = f"Level {level}"
+        self.draw_text_with_glow(
             surface, level_text,
-            (center_x, center_y + 20),
-            'medium', Colors.WHITE
+            (center_x, center_y + 25),
+            'large', Colors.FG_LIGHT,
+            glow_intensity=0.5
         )
+        
+        # Partículas decorativas ao redor
+        for i in range(8):
+            angle = (self._animation_timer * 2 + i * math.pi / 4) % (2 * math.pi)
+            radius = 80 + 20 * math.sin(self._animation_timer * 3 + i)
+            
+            particle_x = center_x + int(radius * math.cos(angle))
+            particle_y = center_y + int(radius * math.sin(angle))
+            
+            particle_color = Colors.RAINBOW_COLORS[i % len(Colors.RAINBOW_COLORS)]
+            particle_size = int(3 + 2 * math.sin(self._animation_timer * 4 + i))
+            
+            pygame.draw.circle(surface, particle_color, 
+                             (particle_x, particle_y), particle_size)
+    
+    def draw_game_over_screen(self, surface: Surface, final_score: int) -> None:
+        """Desenha tela de game over moderna"""
+        center_x = WINDOW_WIDTH // 2
+        center_y = WINDOW_HEIGHT // 2
+        
+        # Overlay escurecido
+        overlay = pygame.Surface((WINDOW_WIDTH, WINDOW_HEIGHT), pygame.SRCALPHA)
+        overlay.fill((*Colors.BG_DARK, 180))
+        surface.blit(overlay, (0, 0))
+        
+        # Painel principal
+        panel_width = 500
+        panel_height = 300
+        panel_rect = pygame.Rect(center_x - panel_width // 2, center_y - panel_height // 2,
+                               panel_width, panel_height)
+        
+        self.draw_panel(surface, panel_rect, Colors.UI_BACKGROUND, Colors.RED)
+        
+        # Conteúdo
+        y_pos = panel_rect.y + 40
+        
+        # Game Over
+        self.draw_text_with_glow(
+            surface, Messages.GAME_OVER,
+            (center_x, y_pos),
+            'extra_large', Colors.RED,
+            glow_intensity=0.8
+        )
+        y_pos += 70
+        
+        # Score final
+        score_text = Messages.FINAL_SCORE.format(score=final_score)
+        self.draw_text_with_glow(
+            surface, score_text,
+            (center_x, y_pos),
+            'large', Colors.UI_ACCENT,
+            glow_intensity=0.4
+        )
+        y_pos += 50
+        
+        # Instruções piscantes
+        blink_alpha = 0.7 + 0.3 * math.sin(self._animation_timer * 4)
+        instruction_color = tuple(int(c * blink_alpha) for c in Colors.UI_SECONDARY)
+        
+        self.draw_text_with_glow(
+            surface, Messages.RESTART_INSTRUCTION,
+            (center_x, y_pos),
+            'medium', instruction_color
+        )
+    
+    def draw_pause_screen(self, surface: Surface) -> None:
+        """Desenha tela de pausa moderna"""
+        center_x = WINDOW_WIDTH // 2
+        center_y = WINDOW_HEIGHT // 2
+        
+        # Overlay com blur simulado
+        overlay = pygame.Surface((WINDOW_WIDTH, WINDOW_HEIGHT), pygame.SRCALPHA)
+        overlay.fill((*Colors.BG_MEDIUM, 150))
+        surface.blit(overlay, (0, 0))
+        
+        # Painel de pausa
+        panel_width = 300
+        panel_height = 120
+        panel_rect = pygame.Rect(center_x - panel_width // 2, center_y - panel_height // 2,
+                               panel_width, panel_height)
+        
+        self.draw_panel(surface, panel_rect, Colors.UI_BACKGROUND, Colors.UI_ACCENT)
+        
+        # Texto de pausa com animação
+        pause_pulse = 1.0 + 0.2 * math.sin(self._animation_timer * 3)
+        pause_color = tuple(int(c * pause_pulse) for c in Colors.UI_ACCENT)
+        
+        self.draw_text_with_glow(
+            surface, Messages.PAUSED,
+            (center_x, center_y),
+            'large', pause_color,
+            glow_intensity=0.6
+        )
+    
+    def cleanup(self) -> None:
+        """Limpa recursos da UI"""
+        self._text_cache.clear()
+        pygame.font.quit()
+        print("🎨 ModernUIManager finalizado!")

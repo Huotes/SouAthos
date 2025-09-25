@@ -127,7 +127,7 @@ class Snake(GameObject):
     
     def draw(self, surface: Surface) -> None:
         """
-        Desenha a cobra na superfície
+        Desenha a cobra com visual Gruvbox moderno
         
         Args:
             surface: Superfície onde desenhar
@@ -137,36 +137,95 @@ class Snake(GameObject):
         
         for i, segment in enumerate(self._body):
             x, y = segment
-            rect = pygame.Rect(x * GRID_SIZE, y * GRID_SIZE, GRID_SIZE, GRID_SIZE)
+            center_x = x * GRID_SIZE + GRID_SIZE // 2
+            center_y = y * GRID_SIZE + GRID_SIZE // 2
             
-            # Desenha cabeça com cor diferente
-            if i == 0:
-                pygame.draw.rect(surface, Colors.DARK_GREEN, rect)
-                # Adiciona "olhos" na cabeça
-                eye_size = GRID_SIZE // 6
-                eye_offset = GRID_SIZE // 4
+            if i == 0:  # Cabeça
+                # Sombra da cabeça
+                shadow_offset = 2
+                shadow_surface = pygame.Surface((GRID_SIZE + 4, GRID_SIZE + 4))
+                shadow_surface.set_alpha(100)
+                shadow_surface.set_colorkey(Colors.BLACK)
+                pygame.draw.circle(shadow_surface, Colors.SHADOW_COLOR, 
+                                 ((GRID_SIZE + 4) // 2, (GRID_SIZE + 4) // 2), 
+                                 GRID_SIZE // 2)
+                surface.blit(shadow_surface, 
+                           (center_x - GRID_SIZE // 2 + shadow_offset - 2, 
+                            center_y - GRID_SIZE // 2 + shadow_offset - 2))
                 
-                left_eye = pygame.Rect(
-                    x * GRID_SIZE + eye_offset,
-                    y * GRID_SIZE + eye_offset,
-                    eye_size, eye_size
-                )
-                right_eye = pygame.Rect(
-                    x * GRID_SIZE + GRID_SIZE - eye_offset - eye_size,
-                    y * GRID_SIZE + eye_offset,
-                    eye_size, eye_size
-                )
+                # Gradiente da cabeça (verde brilhante Gruvbox)
+                head_radius = GRID_SIZE // 2 - 1
                 
-                pygame.draw.rect(surface, Colors.WHITE, left_eye)
-                pygame.draw.rect(surface, Colors.WHITE, right_eye)
-            else:
-                # Corpo com gradiente sutil
-                color_intensity = max(100, 255 - (i * 10))
-                body_color = (0, min(255, color_intensity), 0)
-                pygame.draw.rect(surface, body_color, rect)
-            
-            # Borda dos segmentos
-            pygame.draw.rect(surface, Colors.BLACK, rect, 1)
+                # Brilho externo
+                for glow_radius in range(head_radius + 6, head_radius, -1):
+                    alpha = max(0, 30 - (glow_radius - head_radius) * 5)
+                    if alpha > 0:
+                        glow_surface = pygame.Surface((glow_radius * 2, glow_radius * 2))
+                        glow_surface.set_alpha(alpha)
+                        glow_surface.set_colorkey(Colors.BLACK)
+                        pygame.draw.circle(glow_surface, Colors.SNAKE_HEAD, 
+                                         (glow_radius, glow_radius), glow_radius)
+                        surface.blit(glow_surface, 
+                                   (center_x - glow_radius, center_y - glow_radius))
+                
+                # Cabeça principal com gradiente
+                pygame.draw.circle(surface, Colors.SNAKE_HEAD, (center_x, center_y), head_radius)
+                
+                # Círculo interno mais claro
+                inner_radius = head_radius - 2
+                if inner_radius > 0:
+                    pygame.draw.circle(surface, Colors.BRIGHT_GREEN, 
+                                     (center_x, center_y), inner_radius)
+                
+                # Olhos com tema Gruvbox
+                eye_size = max(2, GRID_SIZE // 8)
+                eye_offset_x = GRID_SIZE // 4
+                eye_offset_y = GRID_SIZE // 6
+                
+                # Olho esquerdo
+                left_eye_x = center_x - eye_offset_x
+                left_eye_y = center_y - eye_offset_y
+                pygame.draw.circle(surface, Colors.FG_LIGHT, (left_eye_x, left_eye_y), eye_size)
+                pygame.draw.circle(surface, Colors.BG_DARK, (left_eye_x, left_eye_y), eye_size - 1)
+                
+                # Olho direito
+                right_eye_x = center_x + eye_offset_x
+                right_eye_y = center_y - eye_offset_y
+                pygame.draw.circle(surface, Colors.FG_LIGHT, (right_eye_x, right_eye_y), eye_size)
+                pygame.draw.circle(surface, Colors.BG_DARK, (right_eye_x, right_eye_y), eye_size - 1)
+                
+                # Borda da cabeça
+                pygame.draw.circle(surface, Colors.BG_DARK, (center_x, center_y), head_radius, 2)
+                
+            else:  # Corpo
+                # Sombra do corpo
+                shadow_surface = pygame.Surface((GRID_SIZE + 2, GRID_SIZE + 2))
+                shadow_surface.set_alpha(80 - i * 5)  # Sombra diminui com distância
+                shadow_surface.set_colorkey(Colors.BLACK)
+                pygame.draw.circle(shadow_surface, Colors.SHADOW_COLOR, 
+                                 ((GRID_SIZE + 2) // 2, (GRID_SIZE + 2) // 2), 
+                                 GRID_SIZE // 2 - 1)
+                surface.blit(shadow_surface, 
+                           (center_x - GRID_SIZE // 2 + 1 - 1, 
+                            center_y - GRID_SIZE // 2 + 1 - 1))
+                
+                # Cor do corpo com gradiente baseado na posição
+                segment_intensity = max(0.6, 1.0 - (i * 0.05))  # Gradiente mais sutil
+                body_color = tuple(int(c * segment_intensity) for c in Colors.SNAKE_BODY)
+                
+                body_radius = GRID_SIZE // 2 - 2
+                
+                # Corpo principal
+                pygame.draw.circle(surface, body_color, (center_x, center_y), body_radius)
+                
+                # Highlight interno
+                inner_color = tuple(min(255, int(c * 1.2)) for c in body_color)
+                inner_radius = body_radius - 2
+                if inner_radius > 0:
+                    pygame.draw.circle(surface, inner_color, (center_x, center_y), inner_radius)
+                
+                # Borda sutil
+                pygame.draw.circle(surface, Colors.BG_DARK, (center_x, center_y), body_radius, 1)
     
     def get_bounds(self) -> pygame.Rect:
         """
