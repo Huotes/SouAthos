@@ -285,7 +285,26 @@ class UIManager:
                     (stats_rect.centerx, stats_y), 
                     'small', Colors.FOOD_MIRROR
                 )
-    
+
+    def draw_hud(self, surface: Surface, score: int, length: int,
+                 level: int = 1, speed_multiplier: float = 1.0,
+                 food_stats: dict = None) -> None:
+        """
+        Compatibilidade retroativa: wrapper para draw_animated_hud.
+        GameEngine e outros módulos chamam draw_hud(...), então
+        mantemos essa assinatura e delegamos para a implementação
+        atual (draw_animated_hud).
+        """
+        # delega para o método existente com a mesma assinatura
+        return self.draw_animated_hud(
+            surface=surface,
+            score=score,
+            length=length,
+            level=level,
+            speed_multiplier=speed_multiplier,
+            food_stats=food_stats
+        )
+
     def draw_level_up_notification(self, surface: Surface, level: int) -> None:
         """Desenha notificação animada de level up"""
         center_x = WINDOW_WIDTH // 2

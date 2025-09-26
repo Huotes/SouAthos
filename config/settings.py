@@ -1,17 +1,17 @@
 """
-Configurações centralizadas do Snake Game com tema Gruvbox
+Configurações centralizadas do Snake Game v3.0
 Princípio DRY: Todas as constantes em um local
-Tema Gruvbox Dark implementado com paleta completa
+Tema Gruvbox + Gráficos avançados + Compatibilidade total
 """
 
-from typing import Tuple
+from typing import Tuple, List
 
 # =============================================================================
 # CONFIGURAÇÕES DA JANELA
 # =============================================================================
 WINDOW_WIDTH: int = 800
 WINDOW_HEIGHT: int = 600
-WINDOW_TITLE: str = "Snake Game - Python 3.13 | Tema Gruvbox"
+WINDOW_TITLE: str = "Snake Game v3.0 - Gruvbox Edition"
 
 # =============================================================================
 # CONFIGURAÇÕES DO GRID
@@ -30,7 +30,7 @@ INITIAL_SNAKE_LENGTH: int = 1
 POINTS_PER_FOOD: int = 1  # 1 ponto por fruta normal
 POINTS_PER_LEVEL: int = 10  # A cada 10 pontos sobe de nível
 
-# Configurações das comidas especiais
+# Configurações das comidas especiais (balanceadas para v3.0)
 SPECIAL_FOOD_POINTS: int = 5  # 5 pontos para comida especial
 SPECIAL_FOOD_SPAWN_CHANCE: float = 0.12  # 12% de chance de spawnar especial
 FUGITIVE_FOOD_SPAWN_CHANCE: float = 0.08  # 8% de chance de spawnar fugitiva
@@ -41,146 +41,181 @@ FUGITIVE_FOOD_POINTS: int = 3  # 3 pontos para comida fugitiva
 MIRROR_FOOD_POINTS: int = 2  # 2 pontos para comida espelho
 
 # =============================================================================
-# PALETA DE CORES GRUVBOX (DARK MODE)
+# PALETA DE CORES GRUVBOX v3.0 (RGB)
 # =============================================================================
 class Colors:
-    """Paleta completa de cores Gruvbox Dark Mode"""
+    """
+    Paleta de cores Gruvbox completa para o Snake Game v3.0
     
-    # Cores de background (fundo)
-    BG_DARK: Tuple[int, int, int] = (40, 40, 40)        # bg0_h
-    BG_MEDIUM: Tuple[int, int, int] = (29, 32, 33)      # bg0
-    BG_LIGHT: Tuple[int, int, int] = (50, 48, 47)       # bg1
-    BG_LIGHTER: Tuple[int, int, int] = (60, 56, 54)     # bg2
-    BG_LIGHTEST: Tuple[int, int, int] = (80, 73, 69)    # bg3
+    Baseada na paleta oficial do tema Gruvbox para terminais
+    Cores organizadas por categoria para fácil manutenção
+    """
     
-    # Cores de foreground (texto)
-    FG_DARK: Tuple[int, int, int] = (157, 0, 6)         # fg0
-    FG_MEDIUM: Tuple[int, int, int] = (235, 219, 178)   # fg1
-    FG_LIGHT: Tuple[int, int, int] = (251, 241, 199)    # fg2
+    # === CORES BASE GRUVBOX ===
+    BG_DARK = (40, 40, 40)          # #282828 - Fundo escuro principal
+    BG_MEDIUM = (60, 56, 54)        # #3c3836 - Fundo médio
+    BG_LIGHT = (80, 73, 69)         # #504945 - Fundo claro
+    BG_LIGHTER = (102, 92, 84)      # #665c54 - Fundo mais claro
     
-    # Cores neutras
-    GRAY_DARK: Tuple[int, int, int] = (124, 111, 100)   # gray0
-    GRAY_LIGHT: Tuple[int, int, int] = (146, 131, 116)  # gray1
+    FG_LIGHT = (235, 219, 178)      # #ebdbb2 - Texto claro principal
+    FG_MEDIUM = (213, 196, 161)     # #d5c4a1 - Texto médio
+    FG_DARK = (146, 131, 116)       # #928374 - Texto escuro
     
-    # Cores vermelhas
-    RED_DARK: Tuple[int, int, int] = (204, 36, 29)      # red0
-    RED_LIGHT: Tuple[int, int, int] = (251, 73, 52)     # red1
-    RED_BRIGHT: Tuple[int, int, int] = (255, 85, 85)    # red2
+    # === CORES DE DESTAQUE GRUVBOX ===
+    RED = (204, 36, 29)             # #cc241d - Vermelho Gruvbox
+    GREEN = (152, 151, 26)          # #98971a - Verde Gruvbox
+    YELLOW = (215, 153, 33)         # #d79921 - Amarelo Gruvbox
+    BLUE = (69, 133, 136)           # #458588 - Azul Gruvbox
+    PURPLE = (177, 98, 134)         # #b16286 - Roxo Gruvbox
+    AQUA = (104, 157, 106)          # #689d6a - Aqua Gruvbox
+    ORANGE = (214, 93, 14)          # #d65d0e - Laranja Gruvbox
     
-    # Cores verdes
-    GREEN_DARK: Tuple[int, int, int] = (152, 151, 26)   # green0
-    GREEN_LIGHT: Tuple[int, int, int] = (184, 187, 38)  # green1
-    GREEN_BRIGHT: Tuple[int, int, int] = (168, 153, 132) # green2
+    # === CORES BRILHANTES GRUVBOX ===
+    BRIGHT_RED = (251, 73, 52)      # #fb4934 - Vermelho brilhante
+    BRIGHT_GREEN = (184, 187, 38)   # #b8bb26 - Verde brilhante
+    BRIGHT_YELLOW = (250, 189, 47)  # #fabd2f - Amarelo brilhante
+    BRIGHT_BLUE = (131, 165, 152)   # #83a598 - Azul brilhante
+    BRIGHT_PURPLE = (211, 134, 155) # #d3869b - Roxo brilhante
+    BRIGHT_AQUA = (142, 192, 124)   # #8ec07c - Aqua brilhante
+    BRIGHT_ORANGE = (254, 128, 25)  # #fe8019 - Laranja brilhante
     
-    # Cores amarelas/laranjas
-    YELLOW_DARK: Tuple[int, int, int] = (215, 153, 33)  # yellow0
-    YELLOW_LIGHT: Tuple[int, int, int] = (250, 189, 47) # yellow1
-    YELLOW_BRIGHT: Tuple[int, int, int] = (255, 213, 0) # yellow2
+    # === MAPEAMENTO PARA ELEMENTOS ESPECÍFICOS ===
     
-    ORANGE_DARK: Tuple[int, int, int] = (214, 93, 14)   # orange0
-    ORANGE_LIGHT: Tuple[int, int, int] = (254, 128, 25) # orange1
-    ORANGE_BRIGHT: Tuple[int, int, int] = (255, 165, 0) # orange2
+    # Grid e Background
+    BACKGROUND = BG_DARK             # Fundo principal
+    GRID_COLOR = BG_MEDIUM           # Cor do grid
+    SHADOW_COLOR = (29, 32, 33)      # #1d2021 - Cor das sombras
     
-    # Cores azuis
-    BLUE_DARK: Tuple[int, int, int] = (69, 133, 136)    # blue0
-    BLUE_LIGHT: Tuple[int, int, int] = (131, 165, 152)  # blue1
-    BLUE_BRIGHT: Tuple[int, int, int] = (109, 188, 247) # blue2
+    # Snake (Cobra)
+    SNAKE_HEAD = BRIGHT_GREEN        # Verde brilhante para cabeça
+    SNAKE_BODY = GREEN               # Verde normal para corpo
+    SNAKE_EYE = FG_LIGHT            # Branco para olhos
+    SNAKE_PUPIL = BG_DARK           # Escuro para pupila
     
-    # Cores roxas
-    PURPLE_DARK: Tuple[int, int, int] = (177, 98, 134)  # purple0
-    PURPLE_LIGHT: Tuple[int, int, int] = (211, 134, 155) # purple1
-    PURPLE_BRIGHT: Tuple[int, int, int] = (212, 80, 135) # purple2
+    # Foods (Comidas) - Cores específicas por tipo
+    FOOD_NORMAL = BRIGHT_RED         # Vermelho brilhante (comida normal)
+    FOOD_SPECIAL = BRIGHT_YELLOW     # Amarelo dourado (comida especial)
+    FOOD_FUGITIVE = BRIGHT_PURPLE    # Roxo brilhante (comida fugitiva)
+    FOOD_MIRROR = BRIGHT_BLUE        # Azul brilhante (comida espelho)
     
-    # Cores aqua/cyan
-    AQUA_DARK: Tuple[int, int, int] = (104, 157, 106)   # aqua0
-    AQUA_LIGHT: Tuple[int, int, int] = (142, 192, 124)  # aqua1
-    AQUA_BRIGHT: Tuple[int, int, int] = (137, 220, 235) # aqua2
+    # UI e Interface
+    UI_PRIMARY = FG_LIGHT            # Texto principal da UI
+    UI_SECONDARY = FG_MEDIUM         # Texto secundário da UI
+    UI_ACCENT = BRIGHT_YELLOW        # Cor de destaque da UI
+    UI_BACKGROUND = BG_MEDIUM        # Fundo dos painéis da UI
+    UI_BORDER = FG_DARK             # Bordas dos elementos da UI
     
-    # Cores para elementos específicos
-    WHITE: Tuple[int, int, int] = (255, 255, 255)
-    BLACK: Tuple[int, int, int] = (0, 0, 0)
+    # Efeitos e Partículas
+    PARTICLE_GLOW = BRIGHT_YELLOW    # Brilho das partículas
+    LEVEL_UP_GLOW = BRIGHT_GREEN     # Brilho do level up
+    FLASH_DEFAULT = BRIGHT_YELLOW    # Flash padrão da tela
     
-    # Cores da cobra
-    SNAKE_HEAD: Tuple[int, int, int] = GREEN_LIGHT      # Cabeça da cobra
-    SNAKE_BODY: Tuple[int, int, int] = GREEN_DARK       # Corpo da cobra
-    SNAKE_TAIL: Tuple[int, int, int] = AQUA_LIGHT       # Cauda da cobra
-    
-    # Cores das comidas
-    FOOD_NORMAL: Tuple[int, int, int] = RED_LIGHT       # Comida normal
-    FOOD_SPECIAL: Tuple[int, int, int] = YELLOW_LIGHT   # Comida especial
-    FOOD_FUGITIVE: Tuple[int, int, int] = PURPLE_LIGHT  # Comida fugitiva
-    FOOD_MIRROR: Tuple[int, int, int] = BLUE_LIGHT      # Comida espelho
-    
-    # Bordas das comidas
-    FOOD_BORDER_NORMAL: Tuple[int, int, int] = RED_DARK
-    FOOD_BORDER_SPECIAL: Tuple[int, int, int] = ORANGE_LIGHT
-    FOOD_BORDER_FUGITIVE: Tuple[int, int, int] = PURPLE_BRIGHT
-    FOOD_BORDER_MIRROR: Tuple[int, int, int] = AQUA_BRIGHT
-    
-    # Cores de efeitos visuais
-    SHADOW_COLOR: Tuple[int, int, int] = BLACK
-    GRID_COLOR: Tuple[int, int, int] = GRAY_DARK
-    HIGHLIGHT_COLOR: Tuple[int, int, int] = YELLOW_BRIGHT
-    
-    # Cores da UI
-    UI_BACKGROUND: Tuple[int, int, int] = BG_LIGHT
-    UI_FOREGROUND: Tuple[int, int, int] = FG_MEDIUM
-    UI_BORDER: Tuple[int, int, int] = GRAY_LIGHT
-    UI_HIGHLIGHT: Tuple[int, int, int] = ORANGE_LIGHT
-    UI_WARNING: Tuple[int, int, int] = RED_LIGHT
-    UI_SUCCESS: Tuple[int, int, int] = GREEN_LIGHT
-    UI_INFO: Tuple[int, int, int] = BLUE_LIGHT
-    
-    # Cores para texto
-    TEXT_PRIMARY: Tuple[int, int, int] = FG_MEDIUM
-    TEXT_SECONDARY: Tuple[int, int, int] = GRAY_LIGHT
-    TEXT_ACCENT: Tuple[int, int, int] = ORANGE_LIGHT
-    TEXT_WARNING: Tuple[int, int, int] = YELLOW_LIGHT
-    TEXT_ERROR: Tuple[int, int, int] = RED_LIGHT
-    TEXT_SUCCESS: Tuple[int, int, int] = GREEN_LIGHT
-    
-    # Cores para efeitos de partículas
-    PARTICLE_PRIMARY: Tuple[int, int, int] = ORANGE_LIGHT
-    PARTICLE_SECONDARY: Tuple[int, int, int] = YELLOW_LIGHT
-    PARTICLE_ACCENT: Tuple[int, int, int] = RED_LIGHT
-    
-    # Cores do arco-íris para efeitos especiais
-    RAINBOW_COLORS = [
-        RED_LIGHT,      # Vermelho
-        ORANGE_LIGHT,   # Laranja
-        YELLOW_LIGHT,   # Amarelo
-        GREEN_LIGHT,    # Verde
-        AQUA_LIGHT,     # Aqua
-        BLUE_LIGHT,     # Azul
-        PURPLE_LIGHT,   # Roxo
+    # Grid Level Up - Cores do arco-íris Gruvbox
+    RAINBOW_COLORS: List[Tuple[int, int, int]] = [
+        BRIGHT_RED,      # Vermelho brilhante
+        BRIGHT_ORANGE,   # Laranja brilhante
+        BRIGHT_YELLOW,   # Amarelo brilhante
+        BRIGHT_GREEN,    # Verde brilhante
+        BRIGHT_BLUE,     # Azul brilhante
+        PURPLE,          # Roxo normal
+        BRIGHT_PURPLE,   # Roxo brilhante
     ]
     
-    # Gradientes Gruvbox
-    GRADIENT_BG = [BG_DARK, BG_MEDIUM, BG_LIGHT]
-    GRADIENT_WARM = [RED_LIGHT, ORANGE_LIGHT, YELLOW_LIGHT]
-    GRADIENT_COOL = [GREEN_LIGHT, AQUA_LIGHT, BLUE_LIGHT]
+    # === ALIASES PARA COMPATIBILIDADE ===
+    BLACK = BG_DARK                  # Compatibilidade
+    WHITE = FG_LIGHT                 # Compatibilidade  
+    GRAY = FG_DARK                   # Compatibilidade
+    LIGHT_GRAY = FG_MEDIUM           # Compatibilidade
+    
+    # Aliases específicos para elementos antigos
+    DARK_GREEN = GREEN               # Compatibilidade com código antigo
+    SPECIAL_FOOD_COLOR = FOOD_SPECIAL
+    SPECIAL_FOOD_BORDER = ORANGE
+    FUGITIVE_FOOD_COLOR = FOOD_FUGITIVE
+    MIRROR_FOOD_COLOR = FOOD_MIRROR
+    MIRROR_FOOD_BORDER = BLUE
 
 # =============================================================================
-# CONFIGURAÇÕES DE FONTES
+# CONFIGURAÇÕES DE EFEITOS VISUAIS v3.0
+# =============================================================================
+class Effects:
+    """
+    Configurações para todos os efeitos visuais v3.0
+    
+    Otimizado para performance e experiência visual moderna
+    Compatível com renderer avançado e sistema de partículas
+    """
+    
+    # === EFEITOS BÁSICOS ===
+    LEVEL_UP_FLASH_DURATION: float = 2.5     # Duração do flash de level up (segundos)
+    LEVEL_UP_FLASH_SPEED: float = 0.08       # Velocidade da animação (mais suave)
+    GRID_TRANSPARENCY: int = 45               # Transparência do grid (0-255)
+    
+    # === EFEITOS DE CONSUMO DE COMIDAS ===
+    SPECIAL_CONSUME_EFFECT_DURATION: float = 1.2   # Duração dos efeitos especiais
+    MIRROR_EFFECT_DURATION: float = 0.8            # Duração da inversão do espelho
+    SCREEN_FLASH_INTENSITY: int = 120              # Intensidade do flash na tela (0-255)
+    PARTICLE_BURST_COUNT: int = 12                 # Partículas no burst de consumo
+    
+    # === ANIMAÇÕES FLUIDAS ===
+    SNAKE_SCALE_ANIMATION: float = 0.1             # Amplitude da animação da cobra
+    FOOD_PULSE_SPEED: float = 2.0                  # Velocidade do pulse das comidas
+    FOOD_GLOW_INTENSITY: float = 0.4               # Intensidade do brilho das comidas
+    UI_ANIMATION_SPEED: float = 3.0                # Velocidade das animações da UI
+    
+    # === SOMBRAS E PROFUNDIDADE ===
+    SHADOW_OFFSET: int = 2                         # Deslocamento das sombras (pixels)
+    SHADOW_BLUR: int = 3                           # Desfoque das sombras (camadas)
+    SHADOW_ALPHA: int = 100                        # Transparência das sombras (0-255)
+    
+    # === SISTEMA DE PARTÍCULAS AMBIENTAIS ===
+    AMBIENT_PARTICLE_COUNT: int = 15               # Número de partículas flutuando
+    AMBIENT_PARTICLE_SPEED: float = 15.0           # Velocidade base das partículas
+    AMBIENT_PARTICLE_ALPHA_MIN: int = 20           # Alpha mínimo das partículas
+    AMBIENT_PARTICLE_ALPHA_MAX: int = 60           # Alpha máximo das partículas
+    AMBIENT_PARTICLE_SIZE_MIN: float = 0.5         # Tamanho mínimo das partículas
+    AMBIENT_PARTICLE_SIZE_MAX: float = 2.5         # Tamanho máximo das partículas
+    AMBIENT_PARTICLE_LIFETIME_MIN: float = 8.0     # Tempo de vida mínimo
+    AMBIENT_PARTICLE_LIFETIME_MAX: float = 20.0    # Tempo de vida máximo
+    
+    # === UI MODERNA ===
+    UI_CORNER_RADIUS: int = 8                      # Raio das bordas arredondadas
+    UI_PADDING: int = 12                           # Espaçamento interno dos painéis
+    UI_SHADOW_INTENSITY: int = 80                  # Intensidade das sombras da UI
+    UI_BREATH_AMPLITUDE: float = 0.02              # Amplitude da respiração da UI
+    UI_BREATH_SPEED: float = 2.0                   # Velocidade da respiração da UI
+    
+    # === GRADIENTES E BRILHOS ===
+    GRADIENT_STEPS: int = 50                       # Passos nos gradientes (performance)
+    GLOW_LAYERS: int = 4                          # Camadas de brilho
+    GLOW_FADE_FACTOR: float = 0.6                 # Fator de fade entre camadas
+    
+    # === PERFORMANCE E OTIMIZAÇÃO ===
+    MAX_PARTICLES: int = 30                       # Máximo absoluto de partículas
+    PARTICLE_SPAWN_INTERVAL: float = 0.5          # Intervalo entre spawn de partículas
+    CACHE_SURFACES: bool = True                   # Se deve cachear superfícies
+    USE_HARDWARE_ACCELERATION: bool = True        # Usar aceleração de hardware se disponível
+
+# =============================================================================
+# CONFIGURAÇÕES DE FONTES v3.0
 # =============================================================================
 class FontSizes:
-    """Tamanhos de fontes para diferentes elementos da UI"""
-    TINY: int = 14
-    SMALL: int = 18
-    MEDIUM: int = 24
-    LARGE: int = 32
-    EXTRA_LARGE: int = 48
-    MASSIVE: int = 64
+    """Tamanhos de fontes otimizados para a nova UI"""
+    TINY: int = 16
+    SMALL: int = 24
+    MEDIUM: int = 36
+    LARGE: int = 48
+    EXTRA_LARGE: int = 72
+    MASSIVE: int = 96         # Para títulos especiais
 
 # =============================================================================
-# CONFIGURAÇÕES DE CONTROLES
+# CONFIGURAÇÕES DE CONTROLES (Mantidas)
 # =============================================================================
 class Controls:
-    """Mapeamento de controles do jogo"""
-    
+    """Mapeamento de controles do jogo (inalterado)"""
     # Movimento
     MOVE_UP = ['K_UP', 'K_w']
-    MOVE_DOWN = ['K_DOWN', 'K_s']
+    MOVE_DOWN = ['K_DOWN', 'K_s'] 
     MOVE_LEFT = ['K_LEFT', 'K_a']
     MOVE_RIGHT = ['K_RIGHT', 'K_d']
     
@@ -188,212 +223,145 @@ class Controls:
     RESTART = 'K_r'
     QUIT = 'K_q'
     PAUSE = 'K_SPACE'
-    TOGGLE_FULLSCREEN = 'K_f'
-    TOGGLE_DEBUG = 'K_F3'
-    
-    # Navegação de menu
-    MENU_UP = ['K_UP', 'K_w']
-    MENU_DOWN = ['K_DOWN', 'K_s']
-    MENU_SELECT = ['K_RETURN', 'K_SPACE']
-    MENU_BACK = 'K_ESCAPE'
 
 # =============================================================================
-# CONFIGURAÇÕES DE EFEITOS VISUAIS
-# =============================================================================
-class Effects:
-    """Configurações para efeitos visuais avançados"""
-    
-    # Durações de efeitos (em segundos)
-    LEVEL_UP_FLASH_DURATION: float = 2.0
-    MIRROR_EFFECT_DURATION: float = 0.5
-    SPECIAL_CONSUME_EFFECT_DURATION: float = 1.0
-    SCREEN_SHAKE_DURATION: float = 0.3
-    PARTICLE_LIFETIME: float = 2.0
-    
-    # Intensidades
-    GRID_TRANSPARENCY: int = 30
-    SCREEN_FLASH_INTENSITY: int = 100
-    SHADOW_ALPHA: int = 140
-    SCREEN_SHAKE_INTENSITY: float = 5.0
-    
-    # Contagens
-    PARTICLE_BURST_COUNT: int = 12
-    AMBIENT_PARTICLE_COUNT: int = 25
-    MAX_PARTICLES: int = 100
-    
-    # Velocidades de animação
-    LEVEL_UP_FLASH_SPEED: float = 0.1
-    PARTICLE_SPEED_MULTIPLIER: float = 1.0
-    AMBIENT_PARTICLE_SPEED: float = 15.0
-    
-    # Layout e UI
-    UI_CORNER_RADIUS: int = 12
-    UI_PADDING: int = 16
-    UI_SHADOW_INTENSITY: int = 120
-    UI_BORDER_WIDTH: int = 2
-    
-    # Sombras
-    SHADOW_OFFSET: int = 6
-    SHADOW_BLUR_RADIUS: int = 8
-    GLOW_INTENSITY: int = 80
-    
-    # Efeitos específicos
-    FUGITIVE_FOOD_BLINK_SPEED: float = 3.0
-    FUGITIVE_FOOD_TRAIL_DURATION: float = 1.5
-    SNAKE_MOVEMENT_SMOOTHING: float = 0.8
-
-# =============================================================================
-# CONFIGURAÇÕES DE ÁUDIO
-# =============================================================================
-class Audio:
-    """Configurações de áudio e sons"""
-    
-    # Volumes (0.0 - 1.0)
-    MASTER_VOLUME: float = 1.0
-    MUSIC_VOLUME: float = 0.7
-    SFX_VOLUME: float = 0.8
-    
-    # Pitch variations
-    PITCH_VARIATION: float = 0.1
-    
-    # Sound file paths (para referência futura)
-    SOUND_EAT: str = "sounds/eat.wav"
-    SOUND_LEVEL_UP: str = "sounds/level_up.wav"
-    SOUND_GAME_OVER: str = "sounds/game_over.wav"
-    SOUND_SPECIAL: str = "sounds/special.wav"
-
-# =============================================================================
-# CONFIGURAÇÕES DE POSIÇÕES INICIAIS
+# CONFIGURAÇÕES DE POSIÇÕES INICIAIS (Mantidas)
 # =============================================================================
 INITIAL_SNAKE_X: int = GRID_WIDTH // 2
 INITIAL_SNAKE_Y: int = GRID_HEIGHT // 2
-INITIAL_DIRECTION: str = 'RIGHT'
 
 # =============================================================================
-# CONFIGURAÇÕES DE DIFICULDADE
-# =============================================================================
-class Difficulty:
-    """Configurações de dificuldade do jogo"""
-    
-    EASY = {
-        'base_fps': 6,
-        'max_fps': 15,
-        'fps_increase': 1.1,
-        'special_food_chance': 0.15,
-        'points_per_level': 8
-    }
-    
-    NORMAL = {
-        'base_fps': 8,
-        'max_fps': 20,
-        'fps_increase': 1.2,
-        'special_food_chance': 0.12,
-        'points_per_level': 10
-    }
-    
-    HARD = {
-        'base_fps': 10,
-        'max_fps': 25,
-        'fps_increase': 1.3,
-        'special_food_chance': 0.08,
-        'points_per_level': 12
-    }
-    
-    EXPERT = {
-        'base_fps': 12,
-        'max_fps': 30,
-        'fps_increase': 1.4,
-        'special_food_chance': 0.05,
-        'points_per_level': 15
-    }
-
-# =============================================================================
-# MENSAGENS DO JOGO
+# MENSAGENS DO JOGO v3.0
 # =============================================================================
 class Messages:
-    """Mensagens exibidas no jogo"""
+    """Mensagens exibidas no jogo com texto atualizado"""
+    # Game states
+    GAME_OVER: str = "GAME OVER"
+    RESTART_INSTRUCTION: str = "Press R to restart or Q to quit"
+    FINAL_SCORE: str = "Final Score: {score:,}"
+    LEVEL_UP: str = "LEVEL UP!"
+    PAUSED: str = "PAUSED - Press SPACE to continue"
     
-    GAME_OVER: str = "FIM DE JOGO"
-    RESTART_INSTRUCTION: str = "Pressione R para reiniciar ou Q para sair"
-    FINAL_SCORE: str = "Pontuação Final: {score}"
-    CURRENT_SCORE: str = "Pontos: {score}"
-    SNAKE_LENGTH: str = "Tamanho: {length}"
-    CURRENT_LEVEL: str = "Nível: {level}"
-    SPEED_INFO: str = "Velocidade: {speed:.1f}x"
-    LEVEL_UP: str = "NIVEL AUMENTADO!"
-    PAUSED: str = "PAUSADO - Pressione ESPAÇO para continuar"
+    # HUD
+    CURRENT_SCORE: str = "Score: {score:,}"
+    SNAKE_LENGTH: str = "Length: {length}"
+    CURRENT_LEVEL: str = "Level: {level}"
+    SPEED_INFO: str = "Speed: {speed:.1f}x"
     
-    # Novas mensagens
-    DIFFICULTY_SELECT: str = "Selecione a Dificuldade"
-    HIGH_SCORE: str = "Recorde: {score}"
-    NEW_HIGH_SCORE: str = "NOVO RECORDE!"
-    SPECIAL_FOOD_EATEN: str = "Comida Especial!"
-    FUGITIVE_FOOD_EATEN: str = "Comida Fugitiva!"
-    MIRROR_FOOD_EATEN: str = "Comida Espelho!"
+    # Novos para v3.0
+    WELCOME_TITLE: str = "Snake Game v3.0"
+    WELCOME_SUBTITLE: str = "Gruvbox Edition"
+    SPECIAL_FOODS_TITLE: str = "Special Foods"
     
-    # Instruções
-    CONTROLS_HELP: str = "Controles: WASD/Setas - Mover | ESPAÇO - Pausar | R - Reiniciar"
-    OBJECTIVE: str = "Objetivo: Coma as frutas para crescer e evitar colisões!"
+    # Estatísticas
+    STATS_NORMAL: str = "🍎 Normal: {count}"
+    STATS_SPECIAL: str = "⭐ Gold: {count}"
+    STATS_FUGITIVE: str = "🏃‍♀️ Runner: {count}"
+    STATS_MIRROR: str = "🪞 Mirror: {count}"
 
 # =============================================================================
-# CONFIGURAÇÕES DE PERFORMANCE
-# =============================================================================
-class Performance:
-    """Configurações de otimização e performance"""
-    
-    MAX_FRAME_SKIP: int = 5
-    TARGET_FPS: int = 60
-    VSYNC: bool = True
-    DOUBLE_BUFFER: bool = True
-    HARDWARE_ACCELERATION: bool = True
-    
-    # Otimizações de partículas
-    PARTICLE_UPDATE_RATE: int = 30  # FPS máximo para atualização de partículas
-    AMBIENT_PARTICLES_ENABLED: bool = True
-    PARTICLE_EFFECTS_ENABLED: bool = True
-    
-    # Cache
-    SURFACE_CACHE_ENABLED: bool = True
-    MAX_CACHED_SURFACES: int = 50
-
-# =============================================================================
-# CONFIGURAÇÕES DE DEBUG
+# CONFIGURAÇÕES DE DESENVOLVIMENTO E DEBUG
 # =============================================================================
 class Debug:
-    """Configurações para modo de depuração"""
+    """Configurações para desenvolvimento e debug"""
+    SHOW_FPS: bool = False              # Mostrar FPS na tela
+    SHOW_PARTICLE_COUNT: bool = False   # Mostrar contagem de partículas
+    SHOW_GRID_COORDINATES: bool = False # Mostrar coordenadas do grid
+    ENABLE_PERFORMANCE_PROFILING: bool = False  # Profiling de performance
+    LOG_LEVEL: str = "INFO"             # Level de log (DEBUG, INFO, WARNING, ERROR)
     
-    SHOW_FPS: bool = False
-    SHOW_COLLISION_BOXES: bool = False
-    SHOW_GRID_COORDINATES: bool = False
-    SHOW_PARTICLE_COUNT: bool = False
-    SHOW_PERFORMANCE_STATS: bool = False
-    
-    # Logging
-    LOG_LEVEL: str = "INFO"  # DEBUG, INFO, WARNING, ERROR
-    LOG_TO_FILE: bool = False
-    LOG_FILE: str = "snake_game.log"
+    # Cores para elementos de debug
+    DEBUG_TEXT_COLOR = Colors.BRIGHT_YELLOW
+    DEBUG_OUTLINE_COLOR = Colors.BRIGHT_RED
 
 # =============================================================================
-# CONSTANTES GLOBAIS
+# CONFIGURAÇÕES DE ÁUDIO (Preparação para futuras versões)
 # =============================================================================
-VERSION: str = "3.0.0"
-AUTHOR: str = "Snake Game Python"
-GAME_NAME: str = "Python Snake Game - Gruvbox Edition"
+class Audio:
+    """Configurações de áudio (preparado para v4.0)"""
+    ENABLED: bool = False               # Áudio desabilitado por enquanto
+    MASTER_VOLUME: float = 0.7          # Volume principal
+    SFX_VOLUME: float = 0.8            # Volume dos efeitos sonoros
+    MUSIC_VOLUME: float = 0.5          # Volume da música de fundo
+    
+    # Arquivos de som (para implementação futura)
+    SOUND_EAT_NORMAL: str = "eat_normal.wav"
+    SOUND_EAT_SPECIAL: str = "eat_special.wav"
+    SOUND_GAME_OVER: str = "game_over.wav"
+    SOUND_LEVEL_UP: str = "level_up.wav"
 
-# Direções possíveis para a cobra
-DIRECTIONS = {
-    'UP': (0, -1),
-    'DOWN': (0, 1),
-    'LEFT': (-1, 0),
-    'RIGHT': (1, 0)
-}
+# =============================================================================
+# METADADOS DO JOGO v3.0
+# =============================================================================
+class GameInfo:
+    """Informações sobre o jogo"""
+    VERSION: str = "3.0"
+    CODENAME: str = "Gruvbox Edition"
+    AUTHOR: str = "Snake Game Development Team"
+    DESCRIPTION: str = "Modern Snake Game with Gruvbox theme and advanced graphics"
+    
+    # URLs (para futuras implementações)
+    REPOSITORY_URL: str = "https://github.com/snake-game/gruvbox-edition"
+    DOCUMENTATION_URL: str = "https://snake-game.github.io/docs"
+    ISSUE_TRACKER_URL: str = "https://github.com/snake-game/gruvbox-edition/issues"
 
-# Estados do jogo
-class GameStates:
-    MENU = "menu"
-    PLAYING = "playing"
-    PAUSED = "paused"
-    GAME_OVER = "game_over"
-    LEVEL_UP = "level_up"
+# =============================================================================
+# VALIDAÇÃO E VERIFICAÇÕES
+# =============================================================================
+def validate_settings() -> bool:
+    """
+    Valida se todas as configurações estão corretas
+    
+    Returns:
+        True se todas as configurações são válidas
+    """
+    try:
+        # Verifica se o grid cabe na janela
+        assert WINDOW_WIDTH > 0 and WINDOW_HEIGHT > 0
+        assert GRID_SIZE > 0
+        assert GRID_WIDTH > 10 and GRID_HEIGHT > 10
+        
+        # Verifica configurações de gameplay
+        assert BASE_FPS > 0 and MAX_FPS > BASE_FPS
+        assert FPS_INCREASE_PER_LEVEL > 1.0
+        assert POINTS_PER_LEVEL > 0
+        
+        # Verifica probabilidades de spawn
+        total_spawn_chance = (SPECIAL_FOOD_SPAWN_CHANCE + 
+                            FUGITIVE_FOOD_SPAWN_CHANCE + 
+                            MIRROR_FOOD_SPAWN_CHANCE)
+        assert 0 < total_spawn_chance < 1.0
+        
+        # Verifica configurações visuais
+        assert 0 <= Effects.GRID_TRANSPARENCY <= 255
+        assert Effects.AMBIENT_PARTICLE_COUNT > 0
+        assert Effects.UI_CORNER_RADIUS >= 0
+        
+        return True
+        
+    except AssertionError as e:
+        print(f"❌ Erro na validação das configurações: {e}")
+        return False
+    
+    except Exception as e:
+        print(f"❌ Erro inesperado na validação: {e}")
+        return False
 
-print("✅ Configurações Gruvbox carregadas com sucesso!")
+# =============================================================================
+# INICIALIZAÇÃO AUTOMÁTICA
+# =============================================================================
+if __name__ == "__main__":
+    # Executa validação quando arquivo é executado diretamente
+    print("🔧 Validando configurações do Snake Game v3.0...")
+    
+    if validate_settings():
+        print("✅ Todas as configurações estão válidas!")
+        print(f"🎮 {GameInfo.VERSION} - {GameInfo.CODENAME}")
+        print(f"📏 Janela: {WINDOW_WIDTH}x{WINDOW_HEIGHT}")
+        print(f"🔲 Grid: {GRID_WIDTH}x{GRID_HEIGHT} ({GRID_SIZE}px)")
+        print(f"🎨 Tema: Gruvbox com {len(Colors.RAINBOW_COLORS)} cores do arco-íris")
+        print(f"✨ Partículas: {Effects.AMBIENT_PARTICLE_COUNT} ambientais")
+        print(f"🚀 Performance: {Effects.MAX_PARTICLES} partículas máximas")
+    else:
+        print("❌ Configurações inválidas detectadas!")
+        exit(1)
