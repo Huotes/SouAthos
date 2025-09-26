@@ -275,21 +275,6 @@ class Renderer:
             animated: Se deve usar animação de fundo
         """
         if animated:
-            # Fundo base com gradiente
-            self._screen.blit(self._background_cache, (0, 0))
-            
-            # Overlay sutil animado para respiração
-            overlay_intensity = 8 + 4 * math.sin(self._animation_timer * 0.6)
-            overlay = pygame.Surface((WINDOW_WIDTH, WINDOW_HEIGHT), pygame.SRCALPHA)
-            overlay.fill((*Colors.YELLOW, int(overlay_intensity)))
-            self._screen.blit(overlay, (0, 0), special_flags=pygame.BLEND_ADD)
-            
-            # Variação temporal no fundo
-            shift_overlay = pygame.Surface((WINDOW_WIDTH, WINDOW_HEIGHT), pygame.SRCALPHA)
-            shift_intensity = int(3 + 2 * math.sin(self._animation_timer * 0.3))
-            shift_overlay.fill((*Colors.ORANGE, shift_intensity))
-            self._screen.blit(shift_overlay, (0, 0), special_flags=pygame.BLEND_ADD)
-        else:
             self._screen.fill(Colors.BG_DARK)
     
     def draw_grid(self, animated: bool = True) -> None:
