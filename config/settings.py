@@ -13,15 +13,17 @@ WINDOW_WIDTH: int = 800
 WINDOW_HEIGHT: int = 600
 WINDOW_TITLE: str = "Snake Game v3.0 - Gruvbox Edition"
 
+HUD_HEIGHT: int = 120
+
 PLAY_AREA_WIDTH = WINDOW_WIDTH
-PLAY_AREA_HEIGHT = WINDOW_HEIGHT - 160
+PLAY_AREA_HEIGHT =  WINDOW_HEIGHT - HUD_HEIGHT
 
 # =============================================================================
 # CONFIGURAÇÕES DO GRID
 # =============================================================================
 GRID_SIZE: int = 20
 GRID_WIDTH: int = WINDOW_WIDTH // GRID_SIZE
-GRID_HEIGHT: int = WINDOW_HEIGHT // GRID_SIZE
+GRID_HEIGHT: int = (WINDOW_HEIGHT - HUD_HEIGHT) // GRID_SIZE
 
 # =============================================================================
 # CONFIGURAÇÕES DE GAMEPLAY

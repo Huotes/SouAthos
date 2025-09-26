@@ -10,7 +10,7 @@ import random
 from typing import List, Tuple, Optional
 from utils.types import Surface, Color
 from config.settings import (
-    WINDOW_WIDTH, WINDOW_HEIGHT, GRID_SIZE, 
+    WINDOW_WIDTH, WINDOW_HEIGHT, PLAY_AREA_WIDTH, PLAY_AREA_HEIGHT, GRID_SIZE, 
     Colors, WINDOW_TITLE, Effects
 )
 
@@ -276,6 +276,15 @@ class Renderer:
         """
         if animated:
             self._screen.fill(Colors.BG_DARK)
+
+            # retângulo da área jogável
+            play_area_rect = pygame.Rect(0, 0, PLAY_AREA_WIDTH, PLAY_AREA_HEIGHT)
+
+            # preencher fundo do campo
+            pygame.draw.rect(self._screen, Colors.BG_DARK, play_area_rect)
+
+            # desenhar bordas
+            pygame.draw.rect(self._screen, Colors.UI_ACCENT, play_area_rect, width=4)
     
     def draw_grid(self, animated: bool = True) -> None:
         """

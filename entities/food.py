@@ -12,7 +12,7 @@ from utils.types import Position, Surface, SnakeBody
 from entities.game_object import GameObject
 from utils.enums import EntityType
 from config.settings import (
-    GRID_SIZE, GRID_WIDTH, GRID_HEIGHT, Colors,
+    GRID_SIZE, GRID_WIDTH, GRID_HEIGHT, HUD_HEIGHT, Colors,
     SPECIAL_FOOD_POINTS, FUGITIVE_FOOD_POINTS, POINTS_PER_FOOD, MIRROR_FOOD_POINTS,
     FUGITIVE_FOOD_BLINK_SPEED, FUGITIVE_FOOD_TRAIL_DURATION
 )
@@ -72,8 +72,7 @@ class Food(GameObject):
                 return
         
         # Fallback: encontra qualquer posição livre (força bruta)
-        all_positions = {(x, y) for x in range(GRID_WIDTH) 
-                        for y in range(GRID_HEIGHT)}
+        all_positions = {(x, y) for x in range(GRID_WIDTH) for y in range(GRID_HEIGHT)}
         available_positions = all_positions - set(snake_body)
         
         if available_positions:

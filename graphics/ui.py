@@ -8,7 +8,7 @@ import math
 from typing import Optional, Tuple, List
 from utils.types import Surface, Color, Font
 from config.settings import (
-    WINDOW_WIDTH, WINDOW_HEIGHT, PLAY_AREA_HEIGHT, PLAY_AREA_WIDTH, Colors, 
+    WINDOW_WIDTH, WINDOW_HEIGHT, HUD_HEIGHT, PLAY_AREA_HEIGHT, PLAY_AREA_WIDTH, Colors, 
     FontSizes, Messages, Effects
 )
 
@@ -197,7 +197,8 @@ class UIManager:
         hud_width = 220
         hud_height = 140
         hud_rect = pygame.Rect(Effects.UI_PADDING, PLAY_AREA_HEIGHT + Effects.UI_PADDING, 
-                              hud_width, hud_height)
+                            surface.get_width() - 2 * Effects.UI_PADDING,
+                            HUD_HEIGHT - 2 * Effects.UI_PADDING)
         
         self.draw_panel(surface, hud_rect, Colors.UI_BACKGROUND, Colors.FG_DARK)
         
